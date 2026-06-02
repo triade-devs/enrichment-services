@@ -1,0 +1,17 @@
+{
+  "name": "enrichment-services",
+  "private": true,
+  "workspaces": ["packages/*", "services/*"],
+  "scripts": {
+    "dev:ncm":     "npm run dev --workspace=services/ms-ncm",
+    "dev:empresa": "npm run dev --workspace=services/ms-empresa",
+    "dev:cep":     "npm run dev --workspace=services/ms-cep",
+    "dev:barcode": "npm run dev --workspace=services/ms-barcode",
+    "test":        "vitest run --reporter=verbose",
+    "test:watch":  "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "vitest": "^2"
+  }
+}
