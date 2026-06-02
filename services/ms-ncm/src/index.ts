@@ -1,4 +1,5 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import cron from "node-cron";
 import { NcmStore } from "./ncm-store";
 import { buildRouter } from "./router";
@@ -6,6 +7,26 @@ import { buildRouter } from "./router";
 const store = new NcmStore();
 const app = express();
 app.use(express.json());
+
+const JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error("SUPABASE_JWT_SECRET is required");
+  process.exit(1);
+}
+
+app.use((req, res, next) => {
+  if (req.path === "/health") return next();
+  const auth = req.headers.authorization;
+  if (!auth?.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "UNAUTHORIZED", message: "Token ausente" });
+  }
+  try {
+    jwt.verify(auth.slice(7), JWT_SECRET!);
+    next();
+  } catch {
+    return res.status(401).json({ error: "UNAUTHORIZED", message: "Token inválido ou expirado" });
+  }
+});
 
 app.get("/health", (_req, res) =>
   res.json({
@@ -27,7 +48,6 @@ app.listen(PORT, async () => {
   }
 });
 
-// Sincroniza diariamente à meia-noite
 cron.schedule("0 0 * * *", async () => {
   try {
     await store.syncFromSiscomex();
