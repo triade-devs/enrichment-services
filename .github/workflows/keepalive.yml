@@ -1,22 +1,13 @@
-name: Keep services alive
+name: Keep service alive
 
 on:
   schedule:
-    - cron: "*/13 * * * *"   # a cada 13 minutos
-  workflow_dispatch:           # permite disparar manualmente
+    - cron: "*/13 * * * *"
+  workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping ms-ncm
-        run: curl -sf ${{ secrets.MS_NCM_URL }}/health || echo "ms-ncm não respondeu"
-
-      - name: Ping ms-empresa
-        run: curl -sf ${{ secrets.MS_EMPRESA_URL }}/health || echo "ms-empresa não respondeu"
-
-      - name: Ping ms-cep
-        run: curl -sf ${{ secrets.MS_CEP_URL }}/health || echo "ms-cep não respondeu"
-
-      - name: Ping ms-barcode
-        run: curl -sf ${{ secrets.MS_BARCODE_URL }}/health || echo "ms-barcode não respondeu"
+      - name: Ping enrichment-services
+        run: curl -sf ${{ secrets.ENRICHMENT_URL }}/health || echo "serviço não respondeu"
