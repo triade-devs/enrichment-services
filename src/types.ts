@@ -2,8 +2,16 @@ export type NcmResult       = { code: string; description: string };
 export type NcmSearchResponse = { results: NcmResult[] };
 
 export type EmpresaResponse = {
-  cnpj: string; name: string; tradeName: string;
-  city: string; state: string; country: string; isActive: boolean;
+  cnpj: string;
+  name: string;
+  tradeName: string;
+  city: string;
+  state: string;
+  country: string;
+  isActive: boolean;
+  cep: string;
+  phone: string;
+  email: string;
 };
 
 export type CepResponse = {

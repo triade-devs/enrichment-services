@@ -17,7 +17,10 @@ export function buildEmpresaResponse(p: Record<string, unknown>): EmpresaRespons
     city: String(p.municipio ?? ""),
     state: String(p.uf ?? ""),
     country: "Brasil",
-    isActive: String(p.situacao_cadastral ?? "").toUpperCase() === "ATIVA",
+    isActive: String(p.descricao_situacao_cadastral ?? "").toUpperCase() === "ATIVA",
+    cep: String(p.cep ?? "").replace(/\D/g, ""),
+    phone: String(p.ddd_telefone_1 ?? "").replace(/\D/g, ""),
+    email: p.email == null ? "" : String(p.email),
   };
 }
 
