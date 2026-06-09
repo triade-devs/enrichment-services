@@ -111,10 +111,27 @@ describe("isValidEan", () => {
 
 describe("buildBarcodeResponse", () => {
   it("normaliza payload do Open Food Facts", () => {
-    expect(buildBarcodeResponse("7891234567890", {
-      status: 1,
-      product: { product_name: "Biscoito", brands: "Marca X", categories: "Biscoitos" },
-    })).toEqual({ ean: "7891234567890", name: "Biscoito", brand: "Marca X", category: "Biscoitos" });
+    expect(
+      buildBarcodeResponse("7891234567890", {
+        status: 1,
+        product: {
+          product_name: "Biscoito",
+          brands: "Marca X",
+          categories: "Biscoitos",
+          quantity: "395 g",
+        },
+      }),
+    ).toEqual({
+      ean: "7891234567890",
+      name: "Biscoito",
+      brand: "Marca X",
+      category: "Biscoitos",
+      quantity: "395 g",
+    });
+  });
+
+  it("quantity vazia quando ausente", () => {
+    expect(buildBarcodeResponse("7891234567890", { status: 1, product: {} })!.quantity).toBe("");
   });
 
   it("retorna null quando status é 0", () => {

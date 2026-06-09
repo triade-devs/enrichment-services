@@ -19,7 +19,11 @@ export type CepResponse = {
 };
 
 export type BarcodeResponse = {
-  ean: string; name: string; brand: string; category: string;
+  ean: string;
+  name: string;
+  brand: string;
+  category: string;
+  quantity: string;
 };
 
 export type CacheEntry<T> = { data: T; cachedAt: number };

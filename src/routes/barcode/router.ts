@@ -20,6 +20,7 @@ export function buildBarcodeResponse(
     name: String(p.product_name ?? ""),
     brand: String(p.brands ?? ""),
     category: String(p.categories ?? ""),
+    quantity: String(p.quantity ?? ""),
   };
 }
 
