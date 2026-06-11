@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: enrichment-services
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      # PORT é injetado pelo Render automaticamente (src/index.ts lê process.env.PORT).
+      - key: SUPABASE_URL
+        value: https://jrfyfgpjnswcguvvuxpx.supabase.co
+      - key: NODE_VERSION
+        value: "20"
