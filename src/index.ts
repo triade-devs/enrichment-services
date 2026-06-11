@@ -1,5 +1,6 @@
+import "dotenv/config";
 import express from "express";
-import jwt from "jsonwebtoken";
+import { jwtVerify, createRemoteJWKSet } from "jose";
 import cron from "node-cron";
 
 import { ncmRouter, ncmStore } from "./routes/ncm/router";
@@ -7,11 +8,14 @@ import { empresaRouter }       from "./routes/empresa/router";
 import { cepRouter }           from "./routes/cep/router";
 import { barcodeRouter }       from "./routes/barcode/router";
 
-const JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
-if (!JWT_SECRET) {
-  console.error("SUPABASE_JWT_SECRET is required");
+const SUPABASE_URL = process.env.SUPABASE_URL;
+if (!SUPABASE_URL) {
+  console.error("SUPABASE_URL is required");
   process.exit(1);
 }
+
+// Chaves de assinatura do Supabase (ES256, assimétricas). Buscadas e cacheadas a partir do JWKS.
+const JWKS = createRemoteJWKSet(new URL(`${SUPABASE_URL}/auth/v1/.well-known/jwks.json`));
 
 const app = express();
 app.use(express.json());
@@ -26,13 +30,13 @@ app.get("/health", (_req, res) =>
 );
 
 // Auth middleware — todas as rotas abaixo exigem JWT válido
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const auth = req.headers.authorization;
   if (!auth?.startsWith("Bearer ")) {
     return res.status(401).json({ error: "UNAUTHORIZED", message: "Token ausente" });
   }
   try {
-    jwt.verify(auth.slice(7), JWT_SECRET!);
+    await jwtVerify(auth.slice(7), JWKS, { algorithms: ["ES256"] });
     next();
   } catch {
     return res.status(401).json({ error: "UNAUTHORIZED", message: "Token inválido ou expirado" });

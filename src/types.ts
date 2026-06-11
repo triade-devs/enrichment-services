@@ -2,8 +2,16 @@ export type NcmResult       = { code: string; description: string };
 export type NcmSearchResponse = { results: NcmResult[] };
 
 export type EmpresaResponse = {
-  cnpj: string; name: string; tradeName: string;
-  city: string; state: string; country: string; isActive: boolean;
+  cnpj: string;
+  name: string;
+  tradeName: string;
+  city: string;
+  state: string;
+  country: string;
+  isActive: boolean;
+  cep: string;
+  phone: string;
+  email: string;
 };
 
 export type CepResponse = {
@@ -11,7 +19,11 @@ export type CepResponse = {
 };
 
 export type BarcodeResponse = {
-  ean: string; name: string; brand: string; category: string;
+  ean: string;
+  name: string;
+  brand: string;
+  category: string;
+  quantity: string;
 };
 
 export type CacheEntry<T> = { data: T; cachedAt: number };

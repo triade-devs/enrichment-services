@@ -53,14 +53,38 @@ describe("isValidCnpj", () => {
 
 describe("buildEmpresaResponse", () => {
   it("normaliza payload da BrasilAPI", () => {
-    expect(buildEmpresaResponse({
-      cnpj: "12345678000195", razao_social: "EMPRESA LTDA", nome_fantasia: "Empresa",
-      municipio: "São Paulo", uf: "SP", situacao_cadastral: "ATIVA",
-    })).toEqual({ cnpj: "12345678000195", name: "EMPRESA LTDA", tradeName: "Empresa", city: "São Paulo", state: "SP", country: "Brasil", isActive: true });
+    expect(
+      buildEmpresaResponse({
+        cnpj: "12345678000195",
+        razao_social: "EMPRESA LTDA",
+        nome_fantasia: "Empresa",
+        municipio: "São Paulo",
+        uf: "SP",
+        descricao_situacao_cadastral: "ATIVA",
+        cep: "01310-100",
+        ddd_telefone_1: "(11) 2385-1939",
+        email: "contato@empresa.com",
+      }),
+    ).toEqual({
+      cnpj: "12345678000195",
+      name: "EMPRESA LTDA",
+      tradeName: "Empresa",
+      city: "São Paulo",
+      state: "SP",
+      country: "Brasil",
+      isActive: true,
+      cep: "01310100",
+      phone: "1123851939",
+      email: "contato@empresa.com",
+    });
   });
 
-  it("marca inativa quando situação não é ATIVA", () => {
-    expect(buildEmpresaResponse({ cnpj: "1", razao_social: "", nome_fantasia: "", municipio: "", uf: "", situacao_cadastral: "BAIXADA" }).isActive).toBe(false);
+  it("marca inativa quando descrição da situação não é ATIVA", () => {
+    expect(buildEmpresaResponse({ descricao_situacao_cadastral: "BAIXADA" }).isActive).toBe(false);
+  });
+
+  it("email vazio quando upstream devolve null", () => {
+    expect(buildEmpresaResponse({ email: null }).email).toBe("");
   });
 });
 
@@ -87,10 +111,27 @@ describe("isValidEan", () => {
 
 describe("buildBarcodeResponse", () => {
   it("normaliza payload do Open Food Facts", () => {
-    expect(buildBarcodeResponse("7891234567890", {
-      status: 1,
-      product: { product_name: "Biscoito", brands: "Marca X", categories: "Biscoitos" },
-    })).toEqual({ ean: "7891234567890", name: "Biscoito", brand: "Marca X", category: "Biscoitos" });
+    expect(
+      buildBarcodeResponse("7891234567890", {
+        status: 1,
+        product: {
+          product_name: "Biscoito",
+          brands: "Marca X",
+          categories: "Biscoitos",
+          quantity: "395 g",
+        },
+      }),
+    ).toEqual({
+      ean: "7891234567890",
+      name: "Biscoito",
+      brand: "Marca X",
+      category: "Biscoitos",
+      quantity: "395 g",
+    });
+  });
+
+  it("quantity vazia quando ausente", () => {
+    expect(buildBarcodeResponse("7891234567890", { status: 1, product: {} })!.quantity).toBe("");
   });
 
   it("retorna null quando status é 0", () => {

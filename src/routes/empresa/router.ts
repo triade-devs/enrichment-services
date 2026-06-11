@@ -17,7 +17,10 @@ export function buildEmpresaResponse(p: Record<string, unknown>): EmpresaRespons
     city: String(p.municipio ?? ""),
     state: String(p.uf ?? ""),
     country: "Brasil",
-    isActive: String(p.situacao_cadastral ?? "").toUpperCase() === "ATIVA",
+    isActive: String(p.descricao_situacao_cadastral ?? "").toUpperCase() === "ATIVA",
+    cep: String(p.cep ?? "").replace(/\D/g, ""),
+    phone: String(p.ddd_telefone_1 ?? "").replace(/\D/g, ""),
+    email: p.email == null ? "" : String(p.email),
   };
 }
 
@@ -29,7 +32,9 @@ empresaRouter.get("/empresa/:cnpj", async (req, res) => {
   const cached = cache.get(cnpj);
   if (cached) return res.json(cached);
   try {
-    const upstream = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+    const upstream = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`, {
+      headers: { "User-Agent": "enrichment-services/1.0" },
+    });
     if (upstream.status === 404) {
       return res.status(404).json({ error: "NOT_FOUND", message: "CNPJ não encontrado" });
     }

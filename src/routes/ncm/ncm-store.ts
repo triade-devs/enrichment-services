@@ -1,9 +1,10 @@
 import type { NcmResult } from "../../types";
 
 const SISCOMEX_URL =
-  "https://portalunico.siscomex.gov.br/classif/api/publico/nomenclatura/download/json";
+  "https://portalunico.siscomex.gov.br/classif/api/publico/nomenclatura/download/json?perfil=PUBLICO";
 
 type SiscomexItem = { Codigo: string; Descricao: string };
+type SiscomexResponse = { Nomenclaturas: SiscomexItem[] };
 
 export class NcmStore {
   private items: NcmResult[] = [];
@@ -31,8 +32,8 @@ export class NcmStore {
   async syncFromSiscomex(): Promise<void> {
     const res = await fetch(SISCOMEX_URL);
     if (!res.ok) throw new Error(`Siscomex respondeu ${res.status}`);
-    const raw = (await res.json()) as SiscomexItem[];
-    this.load(raw.map((i) => ({ code: i.Codigo, description: i.Descricao })));
+    const raw = (await res.json()) as SiscomexResponse;
+    this.load(raw.Nomenclaturas.map((i) => ({ code: i.Codigo, description: i.Descricao })));
     console.log(`ms-ncm: ${this.items.length} NCMs sincronizados`);
   }
 }
